@@ -19,7 +19,7 @@ While the full pipeline must be executed to reproduce results, the following scr
   Performs IDP correction for a given IDP across a range of principal components.
 
 - **2-model_training/models/ResNet/main.py**  
-  Defines the ResNet model architecture and training logic (PyTorch Lightning).
+  Defines the ResNet model architecture and training logic.
 
 - **3-compute_explanations/get_expls.py**  
   Computes model explanations for a specified tasks and trained model checkpoint using selected XAI methods.  
