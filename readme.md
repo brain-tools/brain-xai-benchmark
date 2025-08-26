@@ -63,7 +63,7 @@ Transforms raw IDPs into localized/corrected IDPs (cIDPs):
 
 ## 2. Model Training
 
-Models are trained to predict cIDPs and other targets.
+Scritps for training models to predict cIDPs and other targets:
 
 - Implemented with **PyTorch Lightning** (`LightningModule` classes in `/models`)  
 - Configurations stored in `*.yaml` files under `/run_models`  
