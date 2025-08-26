@@ -106,21 +106,21 @@ Setup training files:
 - Metrics definitions: `metrics.py`
 - Logic for generating ground-truth atlas targets: `1-idp_correction/atlas_methods.py`
 
-### WMH Lesion Load  
+### Lesion Load  
 - `lesions/evaluate_lesion_expls.py`  
-- Warps lesion masks, calculates RMA scores, plots explanations  
+  - Warps lesion masks, calculates RMA scores, plots explanations  
 
 ### Brain Aging Marker Overlap
 - `brain_age_ranking/compute_aging_marker_overlap.py`
-- Ranks brain regions by explanation density or 99th percentile of explanation within region's mask;
+  - Ranks brain regions by explanation density or 99th percentile of explanation within region's mask;
   computes the overlap of the highest ranked regions and known biological markers of aging
-- Requires table with known makers of aging (`aging_volume_table.csv`; from [Walhovd et al., 2011](https://pubmed.ncbi.nlm.nih.gov/19570593/))
+  - Requires table with known makers of aging (`aging_volume_table.csv`; from [Walhovd et al., 2011](https://pubmed.ncbi.nlm.nih.gov/19570593/))
 
 ### Brain Age Explanation Contrast for MS
 
 - `/brain_age_ms_contrast/disease_diff_effect_sizes.ipynb`
-- Computes effect size maps for group differences masked by significance
-- Requires matching file (patients vs. controls; `/brain_age_ms_contrast/files/matching_file.json`)
+  - Computes effect size maps for group differences masked by significance
+  - Requires matching file (patients vs. controls; `/brain_age_ms_contrast/files/matching_file.json`)
 
 ## 5. Natural Image Comparison
 
