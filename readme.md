@@ -99,7 +99,7 @@ Setup training files:
 
 ## 4. XAI Validation
 
-**Prerequisite**: inverse-warp target regions from nonlinear MNI space to participants' linear MNI space using `prewarp_atlas.py`
+**Prerequisite**: inverse-warp atlas target regions from nonlinear MNI space to participants' linear MNI space using `prewarp_atlas.py`
 
 ### Stage 1 & 2 (cIDPs + Artificial Diseases)  
 - Scripts for computing RMA, TPR, and FRP in `cidp_based/`  
