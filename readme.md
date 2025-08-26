@@ -112,8 +112,9 @@ Setup training files:
 
 ### Brain Aging Marker Overlap
 - `brain_age_ranking/compute_aging_marker_overlap.py`
-- Ranks brain regions by explanation density or 99th percentile of explanation within mask. Computes the overlap of the highest ranked brain regions and known biological markers of aging.
-- Inputs: precomputed brain age explanations + known makers of aging from Walhovd et al. (2011) in `aging_volume_table.csv`  
+- Ranks brain regions by explanation density or 99th percentile of explanation within region mask.
+  Computes the overlap of the highest ranked regions and known biological markers of aging.
+- Requires table with known makers of aging (`aging_volume_table.csv`; from Walhovd et al., 2011)
 
 ### Brain Age Explanation Contrast for MS
 
