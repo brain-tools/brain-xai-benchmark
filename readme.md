@@ -81,7 +81,7 @@ Setup training files:
 ### Artificial Diseases
 - `table_and_split_for_art_dis.ipynb` → combines cIDPs into binary disease targets
 
-### WMH Lesion Load
+### Lesion Load
 - `create_dataloader_table.ipynb` using UKBB lesion load field  
 - `adapt_basic_split.ipynb` to drop subjects without T2 image from base split
 
