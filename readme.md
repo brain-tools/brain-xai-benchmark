@@ -73,19 +73,19 @@ Scritps for training models to predict cIDPs and other targets.
 
 Setup training files:
 
-### cIDPs:
+### cIDPs
 - `create_dataloader_table.ipynb` (from corrected cIDPs)  
 - `create_basic_split.ipynb` (random 80/10/10 split)  
 - `adapt_basic_split.ipynb` (removes subjects with missing cortical IDPs)  
 
-### Artificial Diseases:
+### Artificial Diseases
 - `table_and_split_for_art_dis.ipynb` → combines cIDPs into binary disease targets
 
-### WMH Lesion Load:
+### WMH Lesion Load
 - `create_dataloader_table.ipynb` using UKBB lesion load field  
 - `adapt_basic_split.ipynb` to drop subjects without T2 image from base split
 
-### Brain Age:
+### Brain Age
 - `create_dataloader_table.ipynb` for T1/T2 MRIs  
 - Healthy train split from Siegel et al. [(2025)](https://pubmed.ncbi.nlm.nih.gov/40489428/)
 - `adapt_t1_brain_age_split.ipynb` by removing subjects without T2 images
