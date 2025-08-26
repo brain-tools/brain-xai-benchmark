@@ -2,14 +2,11 @@
 
 Read our preprint here: [arXiv:2508.02560](https://www.arxiv.org/abs/2508.02560)
 
----
-
 ## Upfront Note
 This project was computationally very demanding. Many steps required multiple days of runtime on an HPC cluster with a high degree of parallelization. This made building an automated end-to-end pipeline impractical.
 
 Instead, the repository consists of a set of scripts and notebooks that must be run in the correct order to reproduce the results. The pipeline is divided into numbered segments, described below.
 
----
 
 ## Key Scripts Overview
 
@@ -27,7 +24,6 @@ While the full pipeline must be executed to reproduce results, the following scr
 - **4-xai_validation/cidp_based/compute_rma_scores.py**  
   Evaluates explanations against ground-truth targets using the RMA metric.  
 
----
 
 ## Repository Structure
 
@@ -43,16 +39,12 @@ brain-xai-benchmark/
 
 Each folder corresponds to one segment of the pipeline, and the following sections explain them in order:
 
----
-
 ## 0. Preparation
 
 Scripts to compute basic elements required for IDP correction:
 - `save_lin_reg_imgs.py` → saves linearly registered MRI images to disk
 - `fit_masker.py` → fits brain masker  
 - `prep_mass_decorrelate.py` → creates dataframe mapping UKBB IDPs to MRI image paths
-
----
 
 ## 1. IDP Correction
 
@@ -68,8 +60,6 @@ Transforms raw UKBB IDPs into localized IDPs (cIDPs), corrected for overall brai
 - `visualize_cidp_across_npcs.ipynb` → effect of correction across PCs  
 - `visualize_cidps_given_npcs.ipynb` → plots for multiple cIDPs before/after correction  
 - Cutout experiment: `2-model_training/models/ResNet/main_cutout.py`
-
----
 
 ## 2. Model Training
 
@@ -100,16 +90,12 @@ Setup training files:
 - Healthy train split from Siegel et al. [(2025)](https://pubmed.ncbi.nlm.nih.gov/40489428/)
 - `adapt_t1_brain_age_split.ipynb` by removing subjects without T2 images
 
----
-
 ## 3. Compute Explanations
 
 - **get_expls.py** → generates model explanations  
   - Requires: `split.json`, dataloader table, model checkpoint  
   - Uses Lightning `Trainer` class and model `test_step()` functions  
 - XAI methods defined in: `xai_methods.py`  
-
----
 
 ## 4. XAI Validation
 
@@ -133,8 +119,6 @@ Setup training files:
 - `brain_age_disease_diff/disease_diff_effect_sizes.ipynb`  
 - Requires precomputed explanations + matching file (patients vs. controls)
 
----
-
 ## 5. Natural Image Comparison
 
 - `eval_expls_with_seg_masks.py`
@@ -142,8 +126,6 @@ Setup training files:
   - Evaluates with RMA metric and segmentation masks from [ImageNet-S](https://github.com/LUSSeg/ImageNet-S) (Gao et al., 2021)
 - `filter_rma_score_eval.ipynb`
   - creates result dataframe for heatmap plot (Fig. 4) by filtering previously computed RMA scores (e.g. by mask size and explanation cutoff), and by grouping scores into ImageNet supercategories
-
----
 
 ## Installation (GPU machine required)
 
@@ -174,8 +156,6 @@ conda env update --file environment.yaml
 
 - **UK Biobank (UKBB)**: Restricted-access dataset. You need UKBB approval to obtain IDPs and images.  
 - **ImageNet-S**: Available from https://github.com/LUSSeg/ImageNet-S.  
-
----
 
 ## Citation
 
