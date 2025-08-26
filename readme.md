@@ -32,7 +32,7 @@ While the full pipeline must be executed to reproduce results, the following scr
 ## Repository Structure
 
 ```plaintext
-repo-root/
+brain-xai-benchmark/
 ├── 0-prep/                     # Preparation scripts
 ├── 1-idp_correction/           # IDP correction and visualization
 ├── 2-model_training/           # Model definitions, configs, and training scripts
