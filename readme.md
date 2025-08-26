@@ -128,7 +128,7 @@ Setup training files:
   - Computes explanations for pretrained ResNet on ImageNet test/validation images
   - Evaluates explanations with RMA metric and segmentation masks from [ImageNet-S](https://github.com/LUSSeg/ImageNet-S) [(Gao et al., 2021)](https://ieeexplore.ieee.org/document/9933726)
 - `filter_rma_score_eval.ipynb`
-  - Creates result dataframe for heatmap plot (Fig. 4) by filtering previously computed RMA scores (e.g. by mask size and explanation cutoff), and by grouping scores into ImageNet supercategories
+  - Creates result dataframe for heatmap plot (Fig. 4) by filtering previously computed RMA scores (e.g. by mask size and explanation cutoff), and by grouping scores with regards to ImageNet supercategories
 
 ## Installation (GPU machine required)
 
