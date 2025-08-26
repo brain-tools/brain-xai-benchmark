@@ -48,13 +48,13 @@ Scripts to compute basic elements required for IDP correction:
 
 ## 1. IDP Correction
 
-Transforms raw UKBB IDPs into localized IDPs (cIDPs), corrected for overall brain correlations.
+Transforms raw IDPs into localized/corrected IDPs (cIDPs):
 
 - **mass_decorrelate.py** → performs correction for a given IDP across a range of principal components
 - Config files:  
   - `config_cortical.csv`  
   - `config_subcortical.csv`  
-  (contain IDP name strings, UKBB field IDs, atlas keys)  
+  (contain IDP name strings, UKBB field IDs, keys for binary brain atlas)  
 
 **Visualization notebooks:**  
 - `visualize_cidp_across_npcs.ipynb` → effect of correction across PCs  
