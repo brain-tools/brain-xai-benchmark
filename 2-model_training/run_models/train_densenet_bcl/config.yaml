@@ -1,0 +1,41 @@
+# pytorch_lightning==1.7.2
+seed_everything: 1
+model:
+  one_cycle: True
+  max_lr: 0.0001
+  wandb_run_name: art_disease_1_426
+  slurm_run: train_densenet_bcl
+  reduce_on_plat: False
+  reduce_on_plat_start_lr: 0.005
+  reduce_on_plat_red: 0.5
+  wandb_proj: paper-xai-benchmark
+
+data:
+  data_table_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/dummy_diseases/high_27359_426_low_26559_26_0.64ds.csv
+  split_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/dummy_diseases/high_27359_426_low_26559_26_0.64ds.json
+  index_column: eid
+  t1_column: raw
+  coefs_to_mni_column: coefs_to_mni
+  target_column: target
+  extra_modalities: []
+  batch_size: 2
+  num_workers: 8
+  interpolation: "linear"
+  auxiliary_image: False
+  registration: "linear" # linear or nonlinear mni space
+  translation: 0
+  rotation:  0
+  scale: 0
+  flip: false
+  cross_warp: 0
+  random_warp: 0
+  cross_intensity: 0
+  augmentation_probability: 0
+
+trainer:
+  max_steps: 150000
+  accelerator: gpu
+  devices: [0]
+  enable_checkpointing: True
+  default_root_dir: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/tmp
+  accumulate_grad_batches: 1

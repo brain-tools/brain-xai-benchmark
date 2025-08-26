@@ -1,0 +1,47 @@
+seed_everything: 1
+
+model:
+  model_depth: 50
+  one_cycle: True
+  max_lr: 0.0001
+  wandb_run_name: cutout_26559_26_dil_20
+  slurm_run: train_resnet_cutout
+  reduce_on_plat: False
+  reduce_on_plat_start_lr: 0.005
+  reduce_on_plat_red: 0.5
+  target_mean: 0
+  target_std: 0.7042934
+  wandb_proj: paper-xai-benchmark  
+  field: 26559
+  dilation_iter: 20
+
+data:
+  data_table_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/aseg_prototype/table_26559_26.csv
+  split_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/simple_split_aseg.json
+  index_column: eid
+  t1_column: raw
+  coefs_to_mni_column: coefs_to_mni
+  target_column: target
+  extra_modalities: []
+  batch_size: 8
+  num_workers: 8
+  interpolation: "linear"
+  auxiliary_image: False
+  registration: "linear" # linear or nonlinear mni space
+  translation: 0
+  rotation:  0
+  scale: 0
+  flip: false
+  cross_warp: 0
+  random_warp: 0
+  cross_intensity: 0
+  augmentation_probability: 0
+
+trainer:
+  max_steps: 150000
+  accelerator: gpu
+  devices: [0]
+  enable_checkpointing: True
+  accumulate_grad_batches: 1
+  default_root_dir: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/tmp
+

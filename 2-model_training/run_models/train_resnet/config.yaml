@@ -1,0 +1,42 @@
+seed_everything: 1
+model:
+  model_depth: 50
+  one_cycle: True
+  max_lr: 0.0001
+  wandb_run_name: cnn_27652_1
+  slurm_run: train_resnet
+  reduce_on_plat: False
+  reduce_on_plat_start_lr: 0.005
+  reduce_on_plat_red: 0.5
+  target_mean: 0
+  target_std: 1
+  wandb_proj: paper-xai-benchmark
+
+data:
+  data_table_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/uncorrected/table_27652_1.csv
+  split_path: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/simple_split_aparc.json
+  index_column: eid
+  t1_column: raw
+  coefs_to_mni_column: coefs_to_mni
+  target_column: target
+  batch_size: 2
+  num_workers: 8
+  interpolation: "linear"
+  auxiliary_image: False
+  registration: "linear" # linear or nonlinear mni space
+  translation: 0
+  rotation:  0
+  scale: 0
+  flip: false
+  cross_warp: 0
+  random_warp: 0
+  cross_intensity: 0
+  augmentation_probability: 0
+
+trainer:
+  max_steps: 150000
+  accelerator: gpu
+  devices: [0]
+  enable_checkpointing: True
+  accumulate_grad_batches: 1
+  default_root_dir: /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/tmp
