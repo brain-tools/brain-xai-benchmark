@@ -125,10 +125,10 @@ Setup training files:
 ## 5. Natural Image Comparison
 
 - `eval_expls_with_seg_masks.py`
-  - computes explanations for pretrained ResNet on ImageNet test/validation images
+  - Computes explanations for pretrained ResNet on ImageNet test/validation images
   - Evaluates with RMA metric and segmentation masks from [ImageNet-S](https://github.com/LUSSeg/ImageNet-S) [(Gao et al., 2021)](https://ieeexplore.ieee.org/document/9933726)
 - `filter_rma_score_eval.ipynb`
-  - creates result dataframe for heatmap plot (Fig. 4) by filtering previously computed RMA scores (e.g. by mask size and explanation cutoff), and by grouping scores into ImageNet supercategories
+  - Creates result dataframe for heatmap plot (Fig. 4) by filtering previously computed RMA scores (e.g. by mask size and explanation cutoff), and by grouping scores into ImageNet supercategories
 
 ## Installation (GPU machine required)
 
