@@ -7,7 +7,7 @@ Read our preprint here: [arXiv:2508.02560](https://www.arxiv.org/abs/2508.02560)
 ## Upfront Note
 This project was computationally very demanding. Many steps required multiple days of runtime on an HPC cluster with a high degree of parallelization. This made building an automated end-to-end pipeline impractical.
 
-Instead, the repository consists of a set of scripts and notebooks that must be run in the correct order to reproduce the results. The pipeline is divided into numbered stages, described below.
+Instead, the repository consists of a set of scripts and notebooks that must be run in the correct order to reproduce the results. The pipeline is divided into numbered segments, described below.
 
 ---
 
@@ -41,7 +41,7 @@ repo-root/
 └── 5-natural_image_comparison/ # Natural image benchmark
 ```
 
-Each folder corresponds to one phase of the pipeline, and the following sections explain them in order:
+Each folder corresponds to one segment of the pipeline, and the following sections explain them in order:
 
 ---
 
