@@ -101,20 +101,20 @@ Setup training files:
 
 **Prerequisite**: inverse-warp atlas target regions from nonlinear MNI space to participants' linear MNI space using `prewarp_atlas.py`
 
-### Stage 1 & 2 (cIDPs + Artificial Diseases)  
+### cIDP Based (cIDPs + Artificial Diseases)  
 - Scripts for computing RMA, TPR, and FRP in `cidp_based/`  
 - Metrics definitions: `metrics.py`  
 - Ground-truth target generation: `1-idp_correction/atlas_methods.py`
 
-### Stage 3 – WMH Lesion Load  
+### WMH Lesion Load  
 - `lesions/evaluate_lesion_expls.py`  
 - Warps lesion masks, calculates RMA scores, plots explanations  
 
-### Stage 4 – Brain Aging Marker Overlap
+### Brain Aging Marker Overlap
 - `brain_age_ranking/compute_aging_marker_overlap.py`  
 - Inputs: precomputed brain age explanations + known makers of aging from Walhovd et al. (2011) in `aging_volume_table.csv`  
 
-### Brain Age (MS Explanation Contrast)  
+### Brain Age Explanation Contrast for MS
 
 - `brain_age_disease_diff/disease_diff_effect_sizes.ipynb`  
 - Requires precomputed explanations + matching file (patients vs. controls)
