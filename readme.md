@@ -44,7 +44,7 @@ Each folder corresponds to one segment of the pipeline, and the following sectio
 Scripts to compute basic elements required for IDP correction:
 - `save_lin_reg_imgs.py` → saves linearly registered MRI images to disk
 - `fit_masker.py` → fits brain masker  
-- `prep_mass_decorrelate.py` → creates dataframe mapping UKBB IDPs to MRI image paths
+- `prep_mass_decorrelate.py` → creates dataframe mapping IDPs to MRI image paths
 
 ## 1. IDP Correction
 
