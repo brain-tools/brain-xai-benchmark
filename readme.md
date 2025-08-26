@@ -95,7 +95,7 @@ Setup training files:
 - `get_expls.py` → generates model explanations  
   - Requires: `split.json`, dataloader table, model checkpoint  
   - Uses Lightning `Trainer` class and model `test_step()` functions  
-- XAI methods defined in: `xai_methods.py`  
+- XAI method implementations in: `xai_methods.py`
 
 ## 4. XAI Validation
 
