@@ -103,8 +103,8 @@ Setup training files:
 
 ### cIDP Based (cIDPs + Artificial Diseases)  
 - Scripts for computing RMA, TPR, and FRP in `cidp_based/`  
-- Metrics definitions in `metrics.py`  
-- Logic for generating ground-truth targets from binary brain atlas in `1-idp_correction/atlas_methods.py`
+- Metrics definitions: `metrics.py`
+- Logic for generating ground-truth atlas targets: `1-idp_correction/atlas_methods.py`
 
 ### WMH Lesion Load  
 - `lesions/evaluate_lesion_expls.py`  
