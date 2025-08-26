@@ -118,9 +118,9 @@ Setup training files:
 
 ### Brain Age Explanation Contrast for MS
 
-- `brain_age_disease_diff/disease_diff_effect_sizes.ipynb`
+- `/brain_age_ms_contrast/disease_diff_effect_sizes.ipynb`
 - Computes effect size maps for group differences masked by significance
-- Requires matching file (patients vs. controls)
+- Requires matching file (patients vs. controls; `/brain_age_ms_contrast/files/matching_file.json`)
 
 ## 5. Natural Image Comparison
 
