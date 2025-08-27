@@ -6,7 +6,7 @@ from datetime import datetime
 from torch.nn.functional import softmax
 from torchvision import models
 from xai_methods import get_explanation
-from natural_image_helper_methods import get_imgnet_idx, get_cat_name, sample_shap_bg, Preprocessor, create_dir, get_label_from_category, prepare_segmentation_mask, get_img, save_xpl_image_w_neg
+from natural_image_helper_methods import get_imgnet_idx, get_cat_name, sample_shap_bg, Preprocessor, create_dir, get_label_from_category, prepare_segmentation_mask, get_img, save_xpl_image_w_neg, post_proc_expl
 from pathlib import Path
 import numpy as np
 import json
@@ -142,9 +142,9 @@ for sub_dir in p.iterdir():
                 
             # get RMA scores for different cutoffs
             for th in [0, 70, 80, 90, 95, 99]:
-                xpl_flat = xpl.flatten()[None, :]
-
                 xpl = post_proc_expl(xpl, th)
+
+                xpl_flat = xpl.flatten()[None, :]
 
                 # get RMA score
                 score = get_relevance_mass_accuracy_batch(xpl_flat, flat_binary_segmentation_mask)[0]
