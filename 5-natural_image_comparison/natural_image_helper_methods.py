@@ -8,6 +8,21 @@ import os
 import torchvision.transforms as transforms
 import numpy as np
 
+def post_proc_expl(expl, th, scale_perc=None):
+    # only look at features that increase current class' logit
+    expl[expl < 0] = 0
+    
+    if scale_perc is not None:
+        scale_percentile = np.percentile(expl, scale_perc)
+        expl = expl/scale_percentile
+
+    cutoff_values = np.percentile(expl, th)
+
+    mask = expl < cutoff_values
+    expl[mask] = 0
+    
+    return expl
+
 def get_img_path(test_path, val_path, filename):
     
     image_path_test = os.path.join(test_path, filename.replace(".png", ".JPEG")) 

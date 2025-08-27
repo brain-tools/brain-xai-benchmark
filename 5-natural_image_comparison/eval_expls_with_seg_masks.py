@@ -144,6 +144,8 @@ for sub_dir in p.iterdir():
             for th in [0, 70, 80, 90, 95, 99]:
                 xpl_flat = xpl.flatten()[None, :]
 
+                xpl = post_proc_expl(xpl, th)
+
                 # get RMA score
                 score = get_relevance_mass_accuracy_batch(xpl_flat, flat_binary_segmentation_mask)[0]
                 
