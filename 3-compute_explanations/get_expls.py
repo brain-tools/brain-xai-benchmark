@@ -10,15 +10,15 @@ import sys
 from xai_helper_methods import load_masker, create_result_dir, init_xai_dict
 
 # which model architecture to use
-model_type = "DenseNet" # "ResNet" or "DenseNet"
+model_type = "ResNet" # "ResNet" or "DenseNet"
 
 batch_size = 1
 masker_path = "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/files/masker/10k_imgs_masker.pkl"
-xai_methods = ["LRP_EpsilonPlusFlat", "LRP_EpsilonPlus", "LRP_EpsilonAlpha2Beta1", "LRP_EpsilonAlpha2Beta1Flat", "SmoothGrad", "ExcitationBackprop", "DeepLift", "DeepLift_mean_img", "GuidedBackprop", "GuidedGradCam", "GradCAM", "InputXGradient", "GradCAM_l3"]
+xai_methods = ["LRP_EpsilonGamma_0", "LRP_EpsilonGamma_0.001", "LRP_EpsilonGamma_0.01", "LRP_EpsilonGamma_0.1", "LRP_EpsilonGamma_1", "HiResCAM", "EigenCAM", "LayerCAM", "AtlasOcclusion", "LRP_EpsilonPlusFlat", "LRP_EpsilonPlus", "LRP_EpsilonAlpha2Beta1", "LRP_EpsilonAlpha2Beta1Flat", "SmoothGrad", "ExcitationBackprop", "DeepLift", "DeepLift_mean_img", "GuidedBackprop", "GuidedGradCam", "GradCAM", "InputXGradient", "GradCAM_l3"]
 # just for diagnostic/debugging plots
 smooth_sigma_expl = 1.5
 
-expl_save_dir = "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/3-compute_explanations/results/exps"
+expl_save_dir = "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/3-compute_explanations/results/expls"
 
 if model_type == "ResNet": 
     import sys
@@ -31,8 +31,8 @@ elif model_type == "DenseNet":
 
 
 cidp_dict = {"seed_2/disease":{"split_path": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/brain_age_disease_diff/used_disease_as_test_split_T2.json",
-                          # "seed_path": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/model_checkpoints/T2_brain_age/seed_2/epoch=43-step=150000.ckpt",
-                          "seed_path": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/model_checkpoints/densenet/brain_age/seed_3/lightning_logs/version_5025487/checkpoints/epoch=42-step=150000.ckpt",
+                          "seed_path": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/model_checkpoints/T2_brain_age/seed_2/epoch=43-step=150000.ckpt",
+                          # "seed_path": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/model_checkpoints/densenet/brain_age/seed_3/lightning_logs/version_5025487/checkpoints/epoch=42-step=150000.ckpt",
                           "table_csv": "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/model_training/training_files/T2_flair/T2_age_table.csv",
                           "target_mean":64.5549726448325,
                           "target_std":7.73845669467534,

@@ -15,6 +15,7 @@ import skimage
 import sys
 sys.path.append('/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/3-compute_explanations')
 from xai_methods import ExplComputer
+from xai_helper_methods import get_full_atlas
 
 freeze_support()
 
@@ -91,7 +92,9 @@ class Model(LightningModule):
         self.mean_img = np.expand_dims(self.mean_img, axis=0)
         self.mean_img = torch.from_numpy(self.mean_img)
 
-        self.expl_computer = ExplComputer(model_type="ResNet", train_mean=self.train_mean, train_std=self.train_std, deep_lift_mean_img= self.mean_img)
+        # get brain atlas for AtlasOcclusion
+        self.full_atlas = get_full_atlas(res = "1mm")
+        self.expl_computer = ExplComputer(model_type="ResNet", train_mean=self.train_mean, train_std=self.train_std, deep_lift_mean_img= self.mean_img, full_atlas=self.full_atlas)
 
     def forward(self, x):
         # normalize
@@ -199,9 +202,11 @@ class Model(LightningModule):
         """
         if self.test_mode == "xai":
             (x, _, y, eid ), _ = batch
+            # coefs for atlas warping in AtlasOcclusion
+            coefs = _[3]
 
             for xai_method in self.expl_methods:
-                batch_expl = batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method)
+                batch_expl = batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method, coefs=coefs)
                 
                 for i in range(0, batch_expl.shape[0]):
                     

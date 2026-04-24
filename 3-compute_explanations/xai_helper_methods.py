@@ -2,7 +2,9 @@ import numpy as np
 import json
 import pickle
 import os
-import json    
+import json
+import nibabel as nib
+from nilearn.image import load_img, resample_to_img    
 
 def load_masker(masker_path):
     with open(masker_path, 'rb') as file:
@@ -32,3 +34,23 @@ def init_xai_dict(split_path, xai_methods, mask_size):
         xai_dict[xai_m] = m_dict
 
     return xai_dict, n_test
+
+def get_full_atlas(res = "2mm"):
+
+    atlas = load_img("/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/files/atlas_files/aparc.a2009s+aseg.mgz")
+
+    atlas_data = atlas.get_fdata()
+
+    field_atlas = nib.Nifti1Image(atlas_data, atlas._affine)
+    if res == "2mm":
+        atlas_rs = resample_to_img(field_atlas, "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/files/MNI/MNI_T1_2mm_brain_mask.nii.gz", interpolation="nearest")
+
+    elif res == "1mm":
+        atlas_rs = resample_to_img(field_atlas, "/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/Explanation-benchmark-paper/files/MNI/MNI_T1_1mm_brain_mask.nii.gz", interpolation="nearest")
+    
+    atlas_rs_data = atlas_rs.get_fdata()
+    atlas_rs_data = np.rint(atlas_rs_data)
+
+    final_atlas = nib.Nifti1Image(atlas_rs_data, np.eye(4))
+
+    return final_atlas

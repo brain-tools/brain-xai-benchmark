@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zennit"
+version = "0.5.1+local"
+license = { file = "LICENSE" }
+
+[tool.setuptools]
+packages = ["zennit"]
+
+[tool.setuptools.package-data]
+"*" = ["LICENSE"]

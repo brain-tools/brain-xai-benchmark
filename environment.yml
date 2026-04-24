@@ -355,6 +355,6 @@ dependencies:
       - wrapt==1.15.0
       - xyzservices==2023.7.0
       - yarl==1.9.2
-      - zennit==0.5.1
+      - -e /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/3-compute_explanations/local_zennit
 prefix: 
   /sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/envs/brain-xai-benchmark-env

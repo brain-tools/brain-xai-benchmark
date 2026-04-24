@@ -196,9 +196,11 @@ class Model(LightningModule):
         """
         if self.test_mode == "xai":
             (x, _, y, eid ), _ = batch
+            # coefs for atlas warping in AtlasOcclusion
+            coefs = _[3]
 
             for xai_method in self.expl_methods:
-                batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method)
+                batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method, coefs=coefs)
                 
                 for i in range(0, batch_expl.shape[0]):
                     
