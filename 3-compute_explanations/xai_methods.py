@@ -346,12 +346,7 @@ class ExplComputer:
                     # ========================
                     # Take mean intensity of that region from the mean image
                     replacement_vals = self.mean_img[0, 0, atlas_mni == region_id]
-
-                    if replacement_vals.numel() == 0:
-                        # fallback if region missing in template / warped subject
-                        region_replacement = 0.0
-                    else:
-                        region_replacement = float(replacement_vals.mean())
+                    region_replacement = float(replacement_vals.mean())
 
                     # ========================
                     # Apply occlusion
