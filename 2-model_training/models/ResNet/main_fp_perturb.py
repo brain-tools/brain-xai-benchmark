@@ -1,5 +1,6 @@
 from multiprocessing import freeze_support
 import numpy as np
+from scipy import ndimage
 import torch
 from pytorch_lightning.cli import LightningCLI, ReduceLROnPlateau
 from pytorch_lightning import LightningModule
@@ -7,15 +8,19 @@ import torch.nn as nn
 from resnet import generate_model
 import nibabel as nib
 from brain_deform.lightning import BrainDataModule
+from scipy.ndimage import gaussian_filter
 import wandb
 import os
 import yaml
 from nilearn.plotting import plot_stat_map, show
 import skimage
 import sys
+import json
 sys.path.append('/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/3-compute_explanations')
 from xai_methods import ExplComputer
 from xai_helper_methods import get_full_atlas
+sys.path.append('/sc-projects/sc-proj-cc15-cn-ukbiobank/analyses/brain-xai-benchmark/1-idp_correction')
+from atlas_methods import warp_atlas
 
 freeze_support()
 
@@ -195,70 +200,139 @@ class Model(LightningModule):
         self.xai_dict[xai_method]["masked_expl"][self.test_counter + batch_counter, :] = masked_expl[0,:]
         self.xai_dict[xai_method]["eids"][self.test_counter + batch_counter] = eid[batch_counter].detach().cpu().numpy()
 
+    def post_proc_explanation(self, expl):
+        expl = np.abs(expl)
+        # fwhm=4 -> sigma = 1.699
+        expl = gaussian_filter(expl, sigma=1.699)
+        return expl
+
 
     def test_step(self, batch, batch_idx):
         """
-        Test step to compute explanations and infer test-set performance.
+        Test step to perform fp-perturbation.
         """
-        if self.test_mode == "xai":
+        if self.test_mode == "fp-perturb":
             (x, _, y, eid ), _ = batch
             # coefs for atlas warping in AtlasOcclusion
             coefs = _[3]
+            y_scalar = y.detach().cpu().numpy()
+            eid = eid.detach().cpu().numpy()
 
             for xai_method in self.expl_methods:
-                batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method, coefs=coefs)
-                
+                batch_expl = batch_expl = self.expl_computer.get_explanation(self.model, x, xai_method, coefs=coefs)
+
+                # setup images to occlude (fps and hemisphere-flipped fps)
+                x_fp_replace = (torch.clone(x) - self.train_mean) / self.train_std
+                x_flip_replace = (torch.clone(x) - self.train_mean) / self.train_std
+
+
                 for i in range(0, batch_expl.shape[0]):
-                    
                     expl = batch_expl[i, :, :, :]
+                    expl = self.post_proc_explanation(expl)
+                        
+                    # inverse-warp target regions to subject linear mni space
+                    warped_target_atlas, indices = warp_atlas(coefs, "cuda", self.atlas_target)
+                    # dilate target region
+                    warped_atlas_target_dilated = ndimage.binary_dilation(warped_target_atlas, iterations=20)
 
-                    # save raw explanation (will be written to disk later)
-                    self.remember_explanation(expl, i, eid, xai_method)
+                    # calculate fp threshold
+                    voxel_inside_mask = expl[warped_atlas_target_dilated.astype("bool")]
+                    false_positive_th = np.percentile(voxel_inside_mask, 99)
+                
+                    # get voxels where there is a fp
+                    fp_mask = expl > false_positive_th
 
-                    # just for debugging/diagnostic plots:
-                    # abs contributions 
-                    expl = np.abs(expl)
+                    # don't consider voxels within atlas target
+                    fp_mask[warped_atlas_target_dilated] = False
 
-                    # smooth
-                    # expl = gaussian_filter(expl, sigma=self.smooth_sigma)
+                    # dilate fp mask to broadly capture potetnial suppressor information
+                    dilated_fp_mask = ndimage.binary_dilation(fp_mask, iterations=4)
 
-                    # normalize
-                    expl = expl/np.percentile(expl, 95)
+                    # flip mask to create baseline
+                    flipped_mask = dilated_fp_mask[::-1, :, :]
+
+                    # remove non brain voxels potetntially in mask after flipping
+                    flipped_mask_wo_zero = flipped_mask & (x[i, 0, :, :, :].cpu().numpy() > 0)
+                    fp_mask_wo_zero = dilated_fp_mask & (x[i, 0, :, :, :].cpu().numpy() > 0)
                     
-                    if self.test_counter < 30:
-                        
-                        current_eid = int(eid[i].detach().cpu().numpy())
-                        self.plot_xai_instance(expl, x, xai_method, i, eid=current_eid)
-                        
-                    self.xai_dict[xai_method]["mean_expl"] += expl
+                    # remove target region from fp masks, since dilation or flip may have spilled into target region:
+                    flipped_mask_wo_zero_and_target = flipped_mask_wo_zero & ~warped_atlas_target_dilated
+                    fp_mask_wo_zero_and_target = fp_mask_wo_zero & ~warped_atlas_target_dilated
 
-            self.save_predictions(x, eid)
+                    # get mean within brain intensity from mean image for replacements
+                    mean_replace_value = self.mean_img[0, 0, :, :, :][self.mean_img[0, 0, :, :, :] > 0].mean()
+                    
+                    # create occluded versions of input
+                    x_flip_replace[i, 0][flipped_mask_wo_zero_and_target] = mean_replace_value
+                    x_fp_replace[i, 0][fp_mask_wo_zero_and_target] = mean_replace_value
 
-            # last batch can be smaller than batch size        
+
+                    # calculate and save mask size for later analysis (flipped mask and fp mask size should be near identical)
+                    flipped_mask_size = int(flipped_mask_wo_zero_and_target.sum())
+                    self.faith_dict[xai_method]["applied_mask_sizes"].append(flipped_mask_size)
+
+                    # calculate flipped mask & fp mask overlap
+                    overlap_mask = flipped_mask_wo_zero_and_target & fp_mask_wo_zero_and_target
+                    if flipped_mask_size > 0:
+                        overlap_percantage = overlap_mask.sum() / flipped_mask_size
+                    else: overlap_percantage = 0
+                    # save overlap percentage for later analysis
+                    self.faith_dict[xai_method]["flipped_mask_overlap_percentage"].append(float(overlap_percantage))
+
+                    # further logging: did we find a false positive?
+                    fp = False
+                    if flipped_mask_wo_zero_and_target.max() == True:
+                        self.faith_dict[xai_method]["FPs"].append(1)
+                        fp = True
+                    else:
+                        self.faith_dict[xai_method]["FPs"].append(0)
+                    
+                # now pipe the modified inputs through the model
+                prediction_fp_replace = self.model(x_fp_replace).squeeze().detach().cpu().numpy()
+                prediction_flip_replace = self.model(x_flip_replace).squeeze().detach().cpu().numpy()
+                
+                # get original prediction for later comparison
+                x_norm = (torch.clone(x) - self.train_mean) / self.train_std
+                prediction_original = self.model(x_norm).squeeze().detach().cpu().numpy()
+                            
+                # scale predictions back to original space and save them
+                for i in range(x.shape[0]):
+                    if x.shape[0] > 1:
+                        y_hat_scalar_fp_replace = float(prediction_fp_replace[i]*self.target_std + self.target_mean)
+                        y_hat_scalar_flip_replace = float(prediction_flip_replace[i]*self.target_std + self.target_mean)
+                        y_hat_scalar_original = float(prediction_original[i]*self.target_std + self.target_mean)
+                        
+                    else:
+                        y_hat_scalar_fp_replace = float(prediction_fp_replace*self.target_std + self.target_mean)
+                        y_hat_scalar_flip_replace = float(prediction_flip_replace*self.target_std + self.target_mean)
+                        y_hat_scalar_original = float(prediction_original*self.target_std + self.target_mean)
+
+                    self.faith_dict[xai_method]["predictions_fp_replace"].append(y_hat_scalar_fp_replace)
+                    self.faith_dict[xai_method]["predictions_flip_replace"].append(y_hat_scalar_flip_replace)
+                    self.faith_dict[xai_method]["predictions_original"].append(y_hat_scalar_original)
+
+                    # save label and eid for later analysis
+                    label = float(y_scalar[i]) 
+                    self.faith_dict[xai_method]["labels"].append(label)
+                    self.faith_dict[xai_method]["eids"].append(int(eid[i]))
+
+            self.save_dict_to_json(self.faith_dict, self.res_path)
+                
             self.test_counter += x.shape[0]
-            print(f"test counter {self.test_counter}", flush=True)
-
-            # save explanations to disk
-            if len(self.expl_methods) > 0:
-                if self.test_counter == self.n_test:
-                    print(f"saving explanations", flush=True)
-                    
-                    # save explanations to disk
-                    self.save_expl_eval()
-                    
-                    # plot mean expl image
-                    for xai_method in self.expl_methods:
-                        mean_expl = self.xai_dict[xai_method]["mean_expl"]/(self.test_counter)
-                        # random bg image
-                        self.plot_xai_instance(mean_expl, x, xai_method, 0, mean_expl=True)
-
+    
+    def save_dict_to_json(self, data_dict, res_path):
+        """Save dictionary to json file."""
+        # make sure result directory exists
+        os.makedirs(res_path, exist_ok=True)
         
-        if self.test_mode == "predictions":
-            (x, _, y, eid ), _ = batch
-            self.save_predictions(x, eid)
-            self.save_labels(y)
+        # Build file path
+        file_path = os.path.join(res_path, f"fp-replace.json")
 
+        # Save the dictionary as JSON
+        with open(file_path, 'w') as f:
+            json.dump(data_dict, f, indent=4)
 
+        print(f"Saved JSON to {file_path}")
 
     def save_predictions(self, x, eid):
         """
