@@ -18,7 +18,6 @@ def get_explanation(model, x, mode, target, shap_baseline):
 
     # captum
     elif mode in ["DeepLift", "GuidedBackprop", "GuidedGradCam", "InputXGradient", "DeepLiftShap", "DeepLift_mean_img"]:
-        targets = torch.zeros((x.shape[0]), dtype=torch.int64).to(x.device)
         targets = target
 
     if mode == "GradCAM":
